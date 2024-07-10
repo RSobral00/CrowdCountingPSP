@@ -159,5 +159,18 @@ Funcionamento semelhante aos ficheiros de treino dos modelos para o DroneCrowd.
 
 * **Win_PSP_Test.py:** Usado para obter métricas de erro MAE, RMSE, MAPE
   
-* **Win_SSIM.py:** Usado para obter MSSIM dos mapas de densidade estimados e reais, necessário os mapas de desidade do conjunto de teste estarem gerados. 
+* **Win_SSIM.py:** Usado para obter MSSIM dos mapas de densidade estimados e reais, necessário os mapas de desidade do conjunto de teste estarem gerados.
 
+## Programa a ser utilizado pela PSP em Operações:
+
+* **PSP_Contagem_Pessoas.py**
+
+**Funcionamento:** 
+
+* Programa abre diretamente c/ a vista de uma das câmaras, para mudar para a câmara apropriada clicar "Tab" e esperar até mudar de câmara, caso continue a aparecer tudo preto continuar a clicar "Tab" até estar na câmara correta. 
+
+* Para obter previsões é só clicar no "Enter" e esperar até aparecer a mesma. Para voltar à visão de filmagem normal clicar "Enter" outra vez.
+
+* Para guardar a imagem c/ a previsão clicar "G". A imagem é guardada numa pasta onde está localizado o código. 
+
+* Para sair do programa "Q". 
