@@ -1,55 +1,61 @@
 # CrowdCountingPSP
-Projeto de dissertação Rúben Sobral Universidade de Aveiro c/ PSP de Aveiro "Contagem de Pessoas Através de Imagens Recolhidas por um VANT em Operação"
+**Projeto de dissertação Rúben Sobral Universidade de Aveiro c/ PSP de Aveiro "Contagem de Pessoas Através de Imagens Recolhidas por um VANT em Operação"**
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
-Código para gerar os mapas de densidade do DroneCrowd:
+
+
+# DroneCrowd
+
+Download DroneCrowd (Full Version): https://github.com/VisDrone/DroneCrowd  
+
+
+## Código para Gerar os Mapas de Densidade do DroneCrowd:
 -------------------------------------------------------
 
-DC_Train_Data_Generator.py: 
-	Gera os mapas de densidade de treino do DroneCrowd.
-	Abre a lista que contem informação sobre as sequências que são de treino. 
-	Para cada sequência: 
-		Recolhe as coordenadas de cada pessoa em cada frame. 
-		Após isso, para cada frame, é gerado o mapa de densidade com o uso do script DC_Create_DensityMap_Gaussian.py
-	No fim, guarda informação relativa a cada frame, neste caso, o número de pessoas. 
+* **DC_Train_Data_Generator.py**
+* **DC_Val_Data_Generator.py** 
+* **DC_Test_Data_Generator.py**
+* DC_Create_DensityMap_Gaussian.py
 
 
+Executar DC_Train_Data_Generator.py antes de DC_Val_Data_Generator.py.  DC_Test_Data_Generator.py quando desejado. 
 
-DC_Test_Data_Generator.py:
-	Mesmo que o DC_Train_Data_Generator.py mas para os dados de teste do DroneCrowd. 
+**Necessário:**  **trainlist.txt** e **testlist.txt** pertencentes ao DroneCrowd, respetivas anotações das pessoas e imagens. 
 
-
-DC_Val_Data_Generator.py:
-	Copia os density maps de teste já gerados que na realidade são de validação para as pastas apropriadas.
-	
-
-DC_Create_DensityMap_Gaussian:
-	Gera o mapa de densidade ao convolver o filtro gaussiano para cada ponto c/ valor 1 da imagem binária (coordenadas do centro da cabeça).
+**Retorna** os mapas de densidade gerados com o auxílio do ficheiro: DC_Create_DensityMap_Gaussian.py que é usado em **DC_Train_Data_Generator.py** e **DC_Test_Data_Generator.py**.
 
 
 
 
-Código para treinar os modelos ARCN, CSRNET, Soft-CSRNet+ no DroneCrowd:
+## Código de Treino dos Modelos ARCN, CSRNET, Soft-CSRNet+ no DroneCrowd:
 -------------------------------------------------------------------------
-	DC_ARCN.py; DC_CSRNET.py; DC_SoftCSRNETP.py
-		
-	Após geração dos mapas de densidade para os três conjuntos a partir destes scripts é possível treinar os três modelos para o DroneCrowd, onde os modelos treinados são guardados 
-	na pasta "Results" com o histórico de treino. 
-	
-	Foi feita a normalização dos density maps c o valor 0.042 que correspondia ao valor máximo de todos os density maps deste dataset, ao fazer inferência em novas imagens
-	é necessário multiplicar o resultado da soma dos píxeis por este valor para ser obtido a contagem correta de pessoas. Remover este passo durante o treino é sugerido para a próxima.
+* **DC_ARCN.py**
+* **DC_CSRNET.py**
+* **DC_SoftCSRNETP.py**
+
+
+**Necessário:** Possuir as imagens e respetivos density maps de treino e de validação do DroneCrowd.
+
+**Retorna**: Modelos treinados inicialmente no DroneCrowd e histórico de treino.
+
+**Nota:** Foi feita a normalização dos density maps com o valor 0.042 que correspondia ao valor máximo de todos os density maps deste dataset (obtido com DC_Max_Value_DensityMap.py), ao fazer inferência em novas imagens é necessário multiplicar o resultado da soma dos píxeis por este valor para ser obtido a contagem correta de pessoas. Remover este passo durante o treino é sugerido para a próxima implementação.
 
 
 
 
-Código para avaliar os modelos no conjunto de teste DroneCrowd após serem inicialmente treinados:
+
+## Código para avaliar os modelos no conjunto de teste DroneCrowd após serem inicialmente treinados:
 -------------------------------------------------------------------------------------------------
 
-DC_Model_Testing.py:
-	Carrega o modelo e após isso é feita a inferência nas imagens de teste. 
+* **DC_Model_Testing.py**
+  
+
+**Necessário:** Modelo treinado no DroneCrowd, imagens de teste e test_info.txt (csv gerado c/ informação da contagem de pessoas das imagens de teste).
+
+Carrega o modelo e após isso é feita a inferência nas imagens de teste. 
 	Este código também usa a informação verdadeira obtida na geração dos density maps "DroneCrowd/test_data/test_info.txt" 
 	Resulta num csv em que cada linha corresponde à imagem, contagem verdadeira e contagem prevista. 
 
-
+**Retorna**: Ficheiro csv c/ informação relativa a ["Img","N_Gt_Int","N_Gt",N_pred] que será usada na MSE_MAE_Calculator.py.
 
 RMSE_MAE_Calculator.py:
 	O csv que resulta do script anterior é carregado neste ficheiro de forma a calcular o RMSE e MAE 
@@ -59,7 +65,7 @@ RMSE_MAE_Calculator.py:
 
 
 
------------------------------------------------------------
+
 
 Fine-Tuning c/ dados PSP:
 
