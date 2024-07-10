@@ -1,3 +1,4 @@
+#Rúben Sobral 93273 UA - DFIS - Tese
 # Rúben Sobral ARCN implementation 
 
 # Standard Libraries
@@ -59,7 +60,7 @@ np.random.seed(seed)
 # Set random seed for TensorFlow
 tf.random.set_seed(seed)
 
-# tf.keras.backend.set_floatx("float32")
+
 
 
 
@@ -230,11 +231,10 @@ def density_prediction_layer(inputs,target_shape=(1080, 1920)):
 
 input_layer = Input(shape=(1080,1920,3))
 
-# conv1 = Conv2D(32, (3, 3),(2,2),padding="same",activation="relu",kernel_initializer="glorot_uniform")(input_layer)
+
 conv1 = Conv2D(32, (3, 3),(2,2),padding="same",activation="relu")(input_layer)
 
-# batch_norm1 = BatchNormalization()(conv1)
-# relu1 = Activation("relu")(batch_norm1)
+
 
 pool1 = MaxPooling2D((3,3),(2,2),padding="same")(conv1)
 
@@ -362,17 +362,6 @@ model.summary()
 
 
 
-# checkpoint_filepath = os.path.expanduser("~/Desktop/Tese/CrowdCountingUAV/Results/ARCN_Model30_RF")
-# model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
-#     filepath=checkpoint_filepath,
-#     save_weights_only=False,
-#     monitor="val_loss",
-#     mode="min",
-#     save_best_only=True
-# )
-
-
-
 opt =tfa.optimizers.AdamW(learning_rate=1.25e-5,weight_decay=1.25e-5)        
 
 
@@ -390,7 +379,7 @@ model.compile(optimizer=opt,
 
 early_stopping = EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
 
-
+#File with training history
 filename = os.path.expanduser("~/Desktop/Tese/CrowdCountingUAV/Results/ARCN_Model_history.csv")
 history_logger = tf.keras.callbacks.CSVLogger(filename, separator=",", append=True)
 
@@ -428,13 +417,9 @@ class CustomDataGenerator(Sequence):
             # Load and preprocess label
             label = io.loadmat(os.path.join(os.path.expanduser(self.folder_labels), f"{name}.mat"))["heatmap"]
             
-            label = np.array(label).astype(np.float32) / 0.042
+            label = np.array(label).astype(np.float32) / 0.042 #Normalized with the maximum value of all the training density maps 
+                                                                #On inference images it is needed to multiply the predicted DM by 0.042 to obtain the count
             
-
-            # # Randomly flip the image and label
-            # if random.random() < self.flip_probability:
-            #     feature = np.fliplr(feature)
-            #     label = np.fliplr(label)
 
             array_features.append(feature)
             array_labels.append(label)
@@ -464,7 +449,7 @@ val_generator = CustomDataGenerator(val_folder_features, val_folder_labels, name
 shuffle_data_callback = ShuffleDataCallback(train_generator)
 shuffle_data_callback_val = ShuffleDataCallback(val_generator)
 
-# callbacks_list = [model_checkpoint, history_logger, shuffle_data_callback,shuffle_data_callback_val]
+
 callbacks_list = [early_stopping, history_logger, shuffle_data_callback,shuffle_data_callback_val]
 history = model.fit(train_generator, validation_data=val_generator,epochs=EPOCHS, verbose=1,callbacks = callbacks_list)
 
@@ -472,7 +457,7 @@ history = model.fit(train_generator, validation_data=val_generator,epochs=EPOCHS
 
 
 # Save the trained model
-model.save(os.path.expanduser("~/Desktop/Tese/CrowdCountingUAV/Results/ARCN_Model"))
+model.save(os.path.expanduser("~/Desktop/Tese/CrowdCountingPSP/Results/ARCN_Model"))
 
 
 print("Fitted Model")
